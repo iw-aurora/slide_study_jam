@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Git & GitHub — Từ quản lý phiên bản đến cộng tác nhóm</title>
+<style>
+:root{
+  --bg:#0b1020;--panel:#121a2e;--panel2:#18233b;--text:#edf2ff;--muted:#aab6d3;
+  --line:rgba(255,255,255,.12);--blue:#78a9ff;--mint:#6ee7c2;--pink:#f3a6d8;--gold:#ffd479;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+body:before{content:"";position:fixed;inset:0;background:radial-gradient(circle at 85% 15%,rgba(91,126,255,.16),transparent 30%),radial-gradient(circle at 10% 85%,rgba(110,231,194,.10),transparent 32%);pointer-events:none}
+.deck{height:100%;position:relative}
+.slide{position:absolute;inset:0;padding:clamp(24px,5vw,72px) clamp(24px,7vw,104px) 88px;display:flex;flex-direction:column;justify-content:center;opacity:0;transform:translateX(34px) scale(.99);transition:opacity .42s ease,transform .42s ease;pointer-events:none;overflow-y:auto}
+.slide.active{opacity:1;transform:none;pointer-events:auto}
+.eyebrow{color:var(--mint);font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;font-weight:800;margin-bottom:18px}
+h1{font-size:clamp(2.8rem,7vw,6.5rem);line-height:.98;letter-spacing:-.055em;margin:0 0 24px}
+h2{font-size:clamp(2rem,4.3vw,4rem);line-height:1.04;letter-spacing:-.04em;margin:0 0 24px}
+h3{font-size:1.18rem;margin:0 0 10px}
+p{color:var(--muted);font-size:clamp(1rem,1.55vw,1.28rem);line-height:1.65;margin:8px 0}
+strong{color:var(--text)}
+.accent{color:var(--blue)}.mint{color:var(--mint)}.pink{color:var(--pink)}.gold{color:var(--gold)}
+.sub{font-size:clamp(1.05rem,2vw,1.45rem);max-width:850px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:20px}
+.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.card{background:linear-gradient(145deg,rgba(24,35,59,.92),rgba(18,26,46,.92));border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:0 16px 40px rgba(0,0,0,.15)}
+.card p{font-size:1rem;margin-bottom:0}
+.tag{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:8px 13px;color:var(--muted);font-size:.88rem;margin:5px 6px 0 0}
+.pill{display:inline-block;border-radius:999px;padding:5px 10px;font-size:.76rem;font-weight:800;background:rgba(120,169,255,.14);color:var(--blue)}
+.flow{display:flex;align-items:stretch;gap:10px;margin:24px 0;flex-wrap:wrap}
+.flow .step{flex:1;min-width:145px;text-align:center;padding:20px 14px;border:1px solid var(--line);border-radius:16px;background:var(--panel)}
+.arrow{align-self:center;color:var(--mint);font-size:1.5rem}
+.code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#080d19;border:1px solid var(--line);border-radius:12px;padding:14px 17px;color:#c5f6e7;display:block;white-space:pre-wrap;line-height:1.7}
+.table{width:100%;border-collapse:collapse;margin-top:18px;font-size:clamp(.86rem,1.25vw,1rem)}
+.table th,.table td{text-align:left;padding:13px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+.table th{color:var(--mint);font-size:.82rem;text-transform:uppercase;letter-spacing:.08em}
+.table td{color:var(--muted);line-height:1.5}
+.table td:first-child{color:var(--text);font-weight:700}
+.bigquote{font-size:clamp(1.5rem,3vw,2.7rem);line-height:1.3;max-width:950px;letter-spacing:-.025em}
+.center{text-align:center;align-items:center}
+.center .sub{margin-inline:auto}
+.timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:24px}
+.state{padding:17px;border-radius:15px;border:1px solid var(--line);background:var(--panel);min-height:120px}
+.state b{display:block;margin-bottom:8px}
+.state small{color:var(--muted);line-height:1.45;display:block}
+.state:nth-child(1){border-top:3px solid var(--gold)}.state:nth-child(2){border-top:3px solid var(--blue)}.state:nth-child(3){border-top:3px solid var(--pink)}.state:nth-child(4){border-top:3px solid var(--mint)}
+.footer{position:fixed;bottom:0;left:0;right:0;height:62px;padding:0 28px;display:flex;align-items:center;gap:18px;background:linear-gradient(transparent,rgba(7,11,22,.92) 35%);z-index:5}
+.progress{height:3px;background:rgba(255,255,255,.13);flex:1;border-radius:5px;overflow:hidden}
+.progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--mint));transition:width .35s}
+.counter{font-size:.82rem;color:var(--muted);min-width:48px;text-align:right}
+.nav{display:flex;gap:7px}
+button{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 13px;cursor:pointer;font-size:.9rem}
+button:hover{border-color:var(--blue);background:#223151}
+.hint{font-size:.78rem;color:var(--muted)}
+.reveal{animation:rise .65s both}
+.slide.active .reveal:nth-child(2){animation-delay:.08s}.slide.active .reveal:nth-child(3){animation-delay:.16s}.slide.active .reveal:nth-child(4){animation-delay:.24s}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@media(max-width:760px){
+ .slide{padding:30px 22px 90px;justify-content:flex-start;padding-top:8vh}
+ .grid,.grid.three{grid-template-columns:1fr}
+ .timeline{grid-template-columns:repeat(2,1fr)}
+ .flow{flex-direction:column}.arrow{transform:rotate(90deg)}
+ .footer{padding:0 14px;gap:10px}
+ .hint{display:none}
+ .table th,.table td{padding:9px 7px}
+}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main class="deck" id="deck">
+<section class="slide active center">
+  <div class="eyebrow reveal">Kick-off · Nền tảng cộng tác lập trình</div>
+  <h1 class="reveal"><span class="accent">Git</span> <span style="color:#7785a5">&</span><br><span class="mint">GitHub</span></h1>
+  <p class="sub reveal">Từ quản lý phiên bản đến cộng tác phát triển phần mềm theo nhóm.</p>
+  <div class="reveal" style="margin-top:24px"><span class="tag">Version Control</span><span class="tag">Repository</span><span class="tag">Teamwork</span></div>
+  <p class="hint reveal" style="margin-top:42px">Dùng ← → hoặc Space để chuyển slide · Nhấn F để toàn màn hình</p>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">01 · The problem</div>
+  <h2 class="reveal">Vì sao cần <span class="accent">quản lý phiên bản</span>?</h2>
+  <p class="sub reveal">Hãy tưởng tượng cả nhóm cùng sửa một project nhưng không có cách ghi lại lịch sử thay đổi.</p>
+  <div class="grid three reveal">
+    <div class="card"><span class="pill">Vấn đề 01</span><h3 style="margin-top:14px">Mất dấu thay đổi</h3><p>Không rõ ai sửa file nào, sửa lúc nào và vì sao.</p></div>
+    <div class="card"><span class="pill">Vấn đề 02</span><h3 style="margin-top:14px">Khó quay lại</h3><p>Bản mới bị lỗi nhưng không có phiên bản cũ đáng tin để khôi phục.</p></div>
+    <div class="card"><span class="pill">Vấn đề 03</span><h3 style="margin-top:14px">Khó làm việc nhóm</h3><p>Nhiều người sửa cùng project dễ ghi đè hoặc xung đột code.</p></div>
+  </div>
+  <p class="bigquote reveal" style="margin-top:28px">Version Control giúp trả lời: <strong>đã thay đổi gì, khi nào, bởi ai và có thể quay lại đâu?</strong></p>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">02 · Git</div>
+  <h2 class="reveal"><span class="accent">Git</span> là gì?</h2>
+  <p class="sub reveal"><strong>Git</strong> là hệ thống quản lý phiên bản phân tán (Distributed Version Control System – DVCS), dùng để theo dõi thay đổi trong file và mã nguồn.</p>
+  <div class="grid reveal">
+    <div class="card"><h3 class="mint">Theo dõi lịch sử</h3><p>Mỗi lần commit tạo một mốc lưu thay đổi có thể tra cứu và so sánh.</p></div>
+    <div class="card"><h3 class="blue">Phát triển song song</h3><p>Branch cho phép thử nghiệm tính năng độc lập với nhánh chính.</p></div>
+    <div class="card"><h3 class="pink">Làm việc phân tán</h3><p>Mỗi người có bản sao repository và lịch sử trên máy của mình.</p></div>
+    <div class="card"><h3 class="gold">Tích hợp thay đổi</h3><p>Merge kết hợp công việc; conflict cần được giải quyết khi thay đổi không tương thích.</p></div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">03 · Version control systems</div>
+  <h2 class="reveal">Ngoài Git còn có gì?</h2>
+  <p class="reveal">Các hệ thống quản lý phiên bản có thể được chia thành hai hướng chính.</p>
+  <div class="grid reveal">
+    <div class="card"><span class="pill">Centralized · CVCS</span><h3 style="margin-top:14px">Subversion (SVN)</h3><p>Có máy chủ trung tâm lưu lịch sử. Người dùng checkout và commit thay đổi lên server.</p></div>
+    <div class="card"><span class="pill">Distributed · DVCS</span><h3 style="margin-top:14px">Git / Mercurial</h3><p>Mỗi bản sao repository có lịch sử phiên bản. Có thể commit và xem lịch sử khi offline.</p></div>
+  </div>
+  <table class="table reveal">
+    <thead><tr><th>Công cụ</th><th>Mô hình</th><th>Điểm đáng chú ý</th></tr></thead>
+    <tbody>
+      <tr><td>Git</td><td>Phân tán</td><td>Phổ biến trong phát triển phần mềm hiện đại.</td></tr>
+      <tr><td>SVN</td><td>Tập trung</td><td>Mô hình máy chủ trung tâm, vẫn gặp trong một số tổ chức.</td></tr>
+      <tr><td>Mercurial</td><td>Phân tán</td><td>DVCS có triết lý tương tự Git.</td></tr>
+      <tr><td>Fossil</td><td>Phân tán</td><td>Tích hợp quản lý phiên bản, ticket và wiki.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">04 · GitHub</div>
+  <h2 class="reveal"><span class="mint">GitHub</span> là gì?</h2>
+  <p class="sub reveal">GitHub là nền tảng lưu trữ repository Git và cung cấp công cụ để cộng tác phát triển phần mềm.</p>
+  <div class="grid three reveal">
+    <div class="card"><h3>Repository</h3><p>Nơi lưu mã nguồn và lịch sử commit của dự án.</p></div>
+    <div class="card"><h3>Pull Request</h3><p>Đề xuất đưa thay đổi vào nhánh khác, thường kèm review.</p></div>
+    <div class="card"><h3>Issues</h3><p>Ghi nhận bug, yêu cầu tính năng và công việc.</p></div>
+    <div class="card"><h3>Actions</h3><p>Tự động hóa kiểm thử, build và quy trình CI/CD.</p></div>
+    <div class="card"><h3>Projects</h3><p>Theo dõi tiến độ và tổ chức công việc nhóm.</p></div>
+    <div class="card"><h3>Code Review</h3><p>Thảo luận và kiểm tra chất lượng thay đổi trước khi tích hợp.</p></div>
+  </div>
+  <p class="bigquote reveal" style="margin-top:24px"><strong>Git ≠ GitHub</strong><br><span style="color:var(--muted);font-size:.72em">Git là công cụ quản lý phiên bản; GitHub là một nền tảng cộng tác sử dụng Git.</span></p>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">05 · Git hosting alternatives</div>
+  <h2 class="reveal">Có thể dùng gì thay GitHub?</h2>
+  <div class="grid reveal">
+    <div class="card"><h3 class="mint">GitLab</h3><p>Git hosting cùng hệ sinh thái DevSecOps và CI/CD tích hợp.</p><p><span class="tag">gitlab.com</span></p></div>
+    <div class="card"><h3 class="blue">Bitbucket</h3><p>Nền tảng của Atlassian, tích hợp với Jira và các công cụ trong hệ sinh thái.</p><p><span class="tag">bitbucket.org</span></p></div>
+    <div class="card"><h3 class="pink">Gitea</h3><p>Dịch vụ Git nhẹ, mã nguồn mở, phù hợp tự host trên máy chủ riêng.</p><p><span class="tag">about.gitea.com</span></p></div>
+    <div class="card"><h3 class="gold">Codeberg</h3><p>Nền tảng lưu trữ Git hướng đến phần mềm tự do và mã nguồn mở.</p><p><span class="tag">codeberg.org</span></p></div>
+  </div>
+  <p class="reveal" style="margin-top:18px">Lưu ý: GitHub, GitLab và Bitbucket là các nền tảng hosting/cộng tác; chúng không thay thế bản thân Git theo nghĩa VCS.</p>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">06 · Git internals</div>
+  <h2 class="reveal">Git quản lý code qua những khu vực nào?</h2>
+  <p class="reveal">Luồng cơ bản từ file đang sửa đến lịch sử commit:</p>
+  <div class="flow reveal">
+    <div class="step"><span class="pill">01</span><h3 style="margin-top:12px">Working Directory</h3><p style="font-size:.9rem">File trên máy, nơi ta chỉnh sửa code.</p></div>
+    <div class="arrow">→</div>
+    <div class="step"><span class="pill">02</span><h3 style="margin-top:12px">Staging Area</h3><p style="font-size:.9rem">Chọn thay đổi sẽ đưa vào commit.</p><code class="code">git add</code></div>
+    <div class="arrow">→</div>
+    <div class="step"><span class="pill">03</span><h3 style="margin-top:12px">Local Repository</h3><p style="font-size:.9rem">Lưu commit và lịch sử trên máy.</p><code class="code">git commit</code></div>
+  </div>
+  <div class="card reveal" style="margin-top:8px"><h3 class="mint">Remote Repository</h3><p>Bản repository ở máy chủ từ xa, ví dụ GitHub. Dùng <code>git push</code> để gửi commit lên remote; dùng <code>git fetch</code>/<code>git pull</code> để lấy thông tin và thay đổi từ remote.</p></div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">07 · File lifecycle</div>
+  <h2 class="reveal">Vòng đời trạng thái của một file</h2>
+  <div class="timeline reveal">
+    <div class="state"><b class="gold">Untracked</b><small>File mới, Git chưa theo dõi.</small></div>
+    <div class="state"><b class="blue">Unmodified</b><small>File đã được theo dõi, hiện chưa có thay đổi so với phiên bản đã commit.</small></div>
+    <div class="state"><b class="pink">Modified</b><small>File đã được chỉnh sửa kể từ lần commit gần nhất.</small></div>
+    <div class="state"><b class="mint">Staged</b><small>Thay đổi đã được đưa vào Staging Area, sẵn sàng commit.</small></div>
+  </div>
+  <div class="card reveal" style="margin-top:24px">
+    <h3>Ví dụ với file <code>index.html</code></h3>
+    <div class="code">Tạo index.html       → Untracked
+git add index.html   → Staged
+git commit -m "..."  → Unmodified
+Sửa nội dung file    → Modified
+git add index.html   → Staged
+git commit -m "..."  → Unmodified</div>
+  </div>
+  <p class="reveal" style="font-size:.9rem">Một file có thể chuyển qua lại giữa Modified và Staged nhiều lần trước khi commit.</p>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">08 · Team workflow</div>
+  <h2 class="reveal">Một team dùng Git & GitHub ra sao?</h2>
+  <p class="reveal">Ví dụ: hai thành viên cùng phát triển website.</p>
+  <div class="flow reveal">
+    <div class="step"><h3>Clone</h3><p style="font-size:.9rem">Lấy repository về máy.</p></div><div class="arrow">→</div>
+    <div class="step"><h3>Branch</h3><p style="font-size:.9rem">Mỗi người tạo nhánh riêng.</p></div><div class="arrow">→</div>
+    <div class="step"><h3>Commit</h3><p style="font-size:.9rem">Lưu các mốc thay đổi.</p></div>
+    <div class="arrow">→</div><div class="step"><h3>Push</h3><p style="font-size:.9rem">Đẩy nhánh lên remote.</p></div>
+  </div>
+  <div class="grid reveal">
+    <div class="card"><h3 class="blue">Thành viên A</h3><p><code>feature/login</code><br>Phát triển giao diện đăng nhập.</p></div>
+    <div class="card"><h3 class="mint">Thành viên B</h3><p><code>feature/register</code><br>Phát triển giao diện đăng ký.</p></div>
+  </div>
+  <div class="card reveal" style="margin-top:16px"><h3>Pull Request → Review → Merge</h3><p>Cả hai gửi Pull Request. Nhóm review code, xử lý conflict nếu có, rồi tích hợp thay đổi vào nhánh chính.</p></div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">09 · Useful commands</div>
+  <h2 class="reveal">Một số lệnh Git nên biết</h2>
+  <table class="table reveal">
+    <thead><tr><th>Lệnh</th><th>Công dụng</th></tr></thead>
+    <tbody>
+      <tr><td><code>git init</code></td><td>Khởi tạo repository Git mới.</td></tr>
+      <tr><td><code>git clone URL</code></td><td>Sao chép repository từ remote về máy.</td></tr>
+      <tr><td><code>git status</code></td><td>Xem trạng thái file và working tree.</td></tr>
+      <tr><td><code>git add .</code></td><td>Đưa các thay đổi phù hợp vào staging.</td></tr>
+      <tr><td><code>git commit -m "..."</code></td><td>Tạo commit từ nội dung đã staged.</td></tr>
+      <tr><td><code>git branch</code></td><td>Liệt kê hoặc quản lý branch.</td></tr>
+      <tr><td><code>git pull</code></td><td>Fetch và tích hợp thay đổi từ remote.</td></tr>
+      <tr><td><code>git push</code></td><td>Đẩy commit lên remote.</td></tr>
+    </tbody>
+  </table>
+  <p class="reveal" style="font-size:.9rem">Tip: chạy <code>git status</code> thường xuyên để biết mình đang ở trạng thái nào.</p>
+</section>
+
+<section class="slide center">
+  <div class="eyebrow">10 · Wrap-up</div>
+  <h2 class="reveal">Điều cần nhớ</h2>
+  <div class="card reveal" style="max-width:850px;text-align:left">
+    <p>① <strong class="accent">Git</strong> theo dõi lịch sử thay đổi của mã nguồn.</p>
+    <p>② <strong class="mint">GitHub</strong> lưu trữ repository Git và hỗ trợ cộng tác.</p>
+    <p>③ <strong class="pink">add → commit → push</strong> là luồng cơ bản để lưu và chia sẻ thay đổi.</p>
+    <p>④ <strong class="gold">Branch → Pull Request → Review → Merge</strong> giúp nhóm phát triển an toàn hơn.</p>
+  </div>
+  <p class="bigquote reveal" style="margin-top:28px">Git không chỉ giúp lưu code — nó giúp cả nhóm <strong>làm việc có lịch sử, có quy trình và có thể phối hợp.</strong></p>
+  <p class="reveal" style="margin-top:24px">Cảm ơn mọi người! · Q&A</p>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Appendix · References</div>
+  <h2 class="reveal">Tài liệu tham khảo</h2>
+  <div class="grid reveal">
+    <div class="card"><h3>Pro Git Book</h3><p>Sách hướng dẫn Git từ cơ bản đến nâng cao.</p><a href="https://git-scm.com/book/en/v2" target="_blank" rel="noreferrer">git-scm.com/book</a></div>
+    <div class="card"><h3>Git Documentation</h3><p>Tài liệu chính thức về lệnh và cấu hình Git.</p><a href="https://git-scm.com/docs" target="_blank" rel="noreferrer">git-scm.com/docs</a></div>
+    <div class="card"><h3>GitHub Docs</h3><p>Hướng dẫn sử dụng GitHub và cộng tác.</p><a href="https://docs.github.com/" target="_blank" rel="noreferrer">docs.github.com</a></div>
+    <div class="card"><h3>Atlassian Git Tutorials</h3><p>Các bài giải thích trực quan về workflow Git.</p><a href="https://www.atlassian.com/git/tutorials" target="_blank" rel="noreferrer">atlassian.com/git/tutorials</a></div>
+  </div>
+  <p class="reveal" style="margin-top:24px">Gợi ý trước khi trình bày: thay tên nhóm/thành viên, thêm ảnh chụp demo repository thật và thống nhất thời lượng từng phần.</p>
+</section>
+</main>
+<div class="footer">
+  <span class="hint">GIT × GITHUB</span>
+  <div class="progress"><span id="bar"></span></div>
+  <span class="counter" id="counter">01 / 12</span>
+  <div class="nav"><button id="prev" aria-label="Slide trước">←</button><button id="next" aria-label="Slide tiếp">→</button></div>
+</div>
+<script>
+(() => {
+ const slides=[...document.querySelectorAll('.slide')], bar=document.getElementById('bar'), counter=document.getElementById('counter');
+ let index=0;
+ function show(n){
+   index=Math.max(0,Math.min(slides.length-1,n));
+   slides.forEach((s,i)=>s.classList.toggle('active',i===index));
+   bar.style.width=((index+1)/slides.length*100)+'%';
+   counter.textContent=String(index+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
+ }
+ document.getElementById('prev').addEventListener('click',()=>show(index-1));
+ document.getElementById('next').addEventListener('click',()=>show(index+1));
+ document.addEventListener('keydown',e=>{
+   if(['ArrowRight',' ','PageDown'].includes(e.key)){e.preventDefault();show(index+1)}
+   if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();show(index-1)}
+   if(e.key==='Home')show(0);
+   if(e.key==='End')show(slides.length-1);
+   if(e.key.toLowerCase()==='f'){
+     if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();
+     else document.exitFullscreen?.();
+   }
+ });
+ let startX=0;
+ document.addEventListener('touchstart',e=>{startX=e.changedTouches[0].clientX},{passive:true});
+ document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-startX;if(Math.abs(dx)>60)show(index+(dx<0?1:-1))},{passive:true});
+ show(0);
+})();
+</script>
+</body>
+</html>
