@@ -220,16 +220,32 @@ button:hover{border-color:var(--blue);background:#223151}
   <div class="eyebrow">07 · File lifecycle</div>
   <h2 class="reveal">Vòng đời trạng thái của một file</h2>
   <div class="diagram reveal"><div class="diagram-title">File lifecycle · Trạng thái và thao tác</div>
-    <div class="lifecycle">
-      <div class="life gold"><div class="symbol">📄</div><h3>Untracked</h3><p>File mới — Git chưa theo dõi.</p><code>git add</code><span class="lifecycle-arrow">→</span></div>
-      <div class="life mint"><div class="symbol">📦</div><h3>Staged</h3><p>Đã chọn thay đổi để commit.</p><code>git commit</code><span class="lifecycle-arrow">→</span></div>
-      <div class="life blue"><div class="symbol">✅</div><h3>Unmodified</h3><p>Không khác snapshot đã commit.</p><span class="lifecycle-arrow">→</span></div>
-      <div class="life pink"><div class="symbol">✏️</div><h3>Modified</h3><p>File đã được chỉnh sửa.</p><code>git add</code></div>
-    </div>
-    <div class="connector">Modified ── git add ──→ Staged ── git commit ──→ Unmodified</div>
-    <p class="diagram-note">Sửa file từ Unmodified sẽ chuyển sang Modified; file có thể quay lại Staged nhiều lần trước khi commit.</p>
-  </div>
-  <p class="reveal compact-note">Sau khi commit, file trở về Unmodified. Khi sửa tiếp, file chuyển sang Modified và có thể được add lại nhiều lần.</p>
+     <div class="git-life-wrap">
+       <div class="git-life-tracked">Tracked <span>Unmodified · Modified · Staged</span></div>
+       <svg class="git-life-svg" viewBox="0 0 1000 510" role="img" aria-label="Sơ đồ vòng đời file Git: Untracked sang Staged qua git add; Staged sang Unmodified qua git commit; Unmodified sang Modified khi chỉnh sửa; Modified sang Staged qua git add; Unmodified sang Untracked khi ngừng theo dõi.">
+         <defs><marker id="gitArrow" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#8bbaff"/></marker></defs>
+         <g stroke="rgba(180,195,230,.28)" stroke-width="2"><path d="M125 95 V480 M370 95 V480 M620 95 V480 M870 95 V480"/></g>
+         <g font-family="Inter,Segoe UI,sans-serif" text-anchor="middle" font-size="21" font-weight="700">
+           <rect x="28" y="30" width="194" height="65" rx="13" fill="#4a202c" stroke="#f3a6d8"/><text x="125" y="70" fill="#ffd2e9">Untracked</text>
+           <rect x="273" y="30" width="194" height="65" rx="13" fill="#192d4b" stroke="#78a9ff"/><text x="370" y="70" fill="#c8ddff">Unmodified</text>
+           <rect x="523" y="30" width="194" height="65" rx="13" fill="#482b44" stroke="#f3a6d8"/><text x="620" y="70" fill="#ffd2ed">Modified</text>
+           <rect x="773" y="30" width="194" height="65" rx="13" fill="#173e35" stroke="#6ee7c2"/><text x="870" y="70" fill="#b6ffe6">Staged</text>
+         </g>
+         <g stroke="#8bbaff" stroke-width="6" fill="none" marker-end="url(#gitArrow)" stroke-linecap="round">
+           <path d="M130 157 H858"/><path d="M858 245 H385"/><path d="M385 325 H605"/><path d="M635 402 H855"/><path d="M354 473 H145"/>
+         </g>
+         <g fill="#edf2ff" font-family="Inter,Segoe UI,sans-serif" text-anchor="middle" font-size="18">
+           <text x="490" y="145">Track the file · git add</text>
+           <text x="625" y="232">Commit the file · git commit</text>
+           <text x="492" y="312">Edit the file · chỉnh sửa</text>
+           <text x="744" y="389">Stage the file · git add</text>
+           <text x="250" y="458">Remove from tracking · git rm --cached</text>
+         </g>
+       </svg>
+     </div>
+     <p class="diagram-note">Tracked gồm ba trạng thái: Unmodified, Modified và Staged. Sau khi commit, file trở về Unmodified; chỉnh sửa tiếp sẽ chuyển sang Modified.</p>
+   </div>
+   <p class="reveal compact-note">Lưu ý: <code>git rm --cached &lt;file&gt;</code> bỏ file khỏi index và cần commit để ghi nhận việc ngừng theo dõi. File vẫn tồn tại trên máy; nếu dùng <code>git rm &lt;file&gt;</code>, Git còn xóa file khỏi working directory.</p>
 </section>
 
 <section class="slide">
