@@ -16,19 +16,21 @@ Thay vì để kiến thức chỉ nằm trong slide hoặc tài liệu của t�
 
 ## 2. Nội dung hiện có
 
-Các tài liệu trong phiên bản hiện tại tập trung vào **Version Control, Git và GitHub**.
+Các tài liệu trong phiên bản hiện tại tập trung vào **Version Control, Git và GitHub** (Study Session Week 01).
 
 | Tài liệu | Nội dung |
 |---|---|
-| `version_control_and_git.docx` | Khái niệm Version Control; Local, Centralized (CVCS) và Distributed (DVCS); Git và các đặc điểm; Working Directory, Staging Area, Repository; cài đặt và cấu hình Git trên Windows. |
-| `GITHUB.docx` | GitHub là gì; phân biệt Git và GitHub; Repository, Branch, Pull Request, Issues, GitHub Actions, Projects; giới thiệu GitLab và Bitbucket; quy trình cộng tác nhóm và demo GitHub cơ bản. |
+| `study-sessions/week-01/notes/version-control-and-git.docx` | Khái niệm Version Control; Local, Centralized (CVCS) và Distributed (DVCS); Git và các đặc điểm; Working Tree, Staging Area, Git Directory; cài đặt và cấu hình Git trên Windows. |
+| `study-sessions/week-01/notes/github-and-collaboration-platforms.docx` | GitHub là gì; phân biệt Git và GitHub; Repository, Branch, Pull Request, Issues, GitHub Actions, Projects; giới thiệu GitLab và Bitbucket; quy trình cộng tác nhóm và demo GitHub cơ bản. |
 | `index.html` | Website trình chiếu chủ đề Git & GitHub gồm 12 slide, có điều hướng bằng bàn phím/nút bấm, thanh tiến trình và bố cục responsive. |
+| `study-sessions/week-01/README.md` | Giới thiệu nội dung, tài liệu và cấu trúc của Study Session Week 01. |
+| `study-sessions/week-01/resources.md` | Các tài liệu tham khảo cho chủ đề Version Control, Git, GitHub, GitLab và Bitbucket. |
 
 ### Các chủ đề đã được đề cập
 
 - Tổng quan về quản lý phiên bản.
 - Sự khác nhau giữa Local VCS, CVCS và DVCS.
-- Git và quy trình làm việc với Working Directory, Staging Area, Local Repository và Remote Repository.
+- Git và quy trình làm việc với Working Tree, Staging Area, Git Directory và Remote Repository.
 - Các lệnh Git cơ bản: `init`, `clone`, `status`, `add`, `commit`, `branch`, `pull`, `push`.
 - GitHub và các tính năng hỗ trợ cộng tác.
 - GitLab và Bitbucket như những nền tảng lưu trữ, cộng tác thay thế.
@@ -40,7 +42,7 @@ Dự án hiện sử dụng HTML, CSS và JavaScript thuần; chưa cần cài �
 
 1. Clone hoặc tải repository về máy.
 2. Mở thư mục dự án.
-3. Mở file `index.html` bằng trình duyệt.
+3. Mở file `index.html` ở thư mục gốc bằng trình duyệt.
 
 Có thể dùng Visual Studio Code và tiện ích Live Server để chạy website trên máy local.
 
@@ -53,17 +55,7 @@ Sau đó mở `index.html` hoặc chọn **Open with Live Server** trong VS Code
 
 ## 4. Cấu trúc thư mục
 
-Cấu trúc hiện tại:
-
-```text
-study_jam-main/
-├── README.md
-├── index.html
-├── GITHUB.docx
-└── version_control_and_git.docx
-```
-
-Khi nội dung tăng lên qua từng tuần, có thể tổ chức tài liệu theo cấu trúc thống nhất sau (đây là cấu trúc định hướng, không phải các thư mục đã có sẵn trong phiên bản hiện tại):
+Cấu trúc repository sau khi sắp xếp:
 
 ```text
 study_jam/
@@ -73,18 +65,27 @@ study_jam/
 │   ├── images/
 │   └── files/
 └── study-sessions/
-    ├── week-01/
-    │   ├── README.md
-    │   ├── slides/
-    │   ├── notes/
-    │   └── resources.md
-    ├── week-02/
-    │   ├── README.md
-    │   ├── slides/
-    │   ├── notes/
-    │   └── resources.md
-    └── ...
+    └── week-01/
+        ├── README.md
+        ├── slides/
+        ├── notes/
+        │   ├── version-control-and-git.docx
+        │   └── github-and-collaboration-platforms.docx
+        └── resources.md
 ```
+
+### Quy ước tổ chức
+
+- `index.html`: giữ tại thư mục gốc để tiếp tục là điểm mở website.
+- `assets/images/`: hình ảnh dùng chung cho website và tài liệu.
+- `assets/files/`: các tài nguyên dùng chung khác.
+- `study-sessions/`: chứa nội dung được phân chia theo từng buổi/tuần Study Jam.
+- `week-XX/README.md`: giới thiệu chủ đề, nội dung và tài liệu của từng buổi.
+- `week-XX/slides/`: slide của buổi học.
+- `week-XX/notes/`: tài liệu học tập, ghi chú và file Word.
+- `week-XX/resources.md`: nguồn tham khảo của buổi học.
+
+Các thư mục `assets/` và `slides/` hiện được tạo sẵn để bổ sung tài nguyên; chưa có file nào được chuyển vào đó trong phiên bản này.
 
 ## 5. Quy trình cập nhật sau mỗi buổi Study Jam
 
